@@ -23,6 +23,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(result => {
         console.log(result);
     });
+    load_mailbox('sent');
+    // to prevent page refresh
+    return false;
   }
 });
 
