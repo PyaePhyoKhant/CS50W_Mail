@@ -54,9 +54,32 @@ function load_mailbox(mailbox) {
   fetch('/emails/' + mailbox)
   .then(response => response.json())
   .then(emails => {
-      // Print emails
-      console.log(emails);
+      emails_view = document.querySelector('#emails-view');
+      emails.forEach(item => {
+        const new_row = document.createElement('div');
+        new_row.classList.add('row');
+        new_row.classList.add('border');
+        new_row.classList.add('border-dark');
+        
+        let new_col;
 
-      // ... do something else with emails ...
+        new_col = document.createElement('div');
+        new_col.classList.add('col-3');
+        new_col.innerHTML = `<b>${item['sender']}</b>`;
+        new_row.append(new_col);
+
+        new_col = document.createElement('div');
+        new_col.classList.add('col-6');
+        new_col.innerHTML = `${item['subject']}`;
+        new_row.append(new_col);
+
+        new_col = document.createElement('div');
+        new_col.classList.add('col-3');
+        new_col.classList.add('text-right');
+        new_col.innerHTML = `${item['timestamp']}`;
+        new_row.append(new_col);
+
+        emails_view.append(new_row);
+      });
   });
   }
