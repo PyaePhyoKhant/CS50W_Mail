@@ -34,6 +34,7 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#emails-detail').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -46,6 +47,7 @@ function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#emails-detail').style.display = 'none';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -78,6 +80,12 @@ function load_mailbox(mailbox) {
         new_col.classList.add('text-right');
         new_col.innerHTML = `${item['timestamp']}`;
         new_row.append(new_col);
+
+        new_row.addEventListener('click', function() {
+          document.querySelector('#emails-view').style.display = 'none';
+          document.querySelector('#compose-view').style.display = 'none';
+          document.querySelector('#emails-detail').style.display = 'block';
+        })
 
         emails_view.append(new_row);
       });
