@@ -35,11 +35,45 @@ function compose_email() {
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
   document.querySelector('#emails-detail').style.display = 'none';
-
+  
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+}
+
+function load_email_detail(mail_id) {
+  // Show compose view and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector('#emails-detail').style.display = 'block';
+
+  fetch('/emails/' + mail_id)
+  .then(response => response.json())
+  .then(email => {
+      root_view = document.querySelector('#emails-detail');
+
+      // TODO: add click EventListener
+      reply_button = document.createElement('button')
+      reply_button.classList.add('btn')
+      reply_button.classList.add('btn-sm')
+      reply_button.classList.add('btn-outline-primary')
+      reply_button.setAttribute('id', 'reply')
+      reply_button.innerHTML = 'Reply'
+
+      root_view.innerHTML= `
+        <b>From: </b>${email['sender']}<br>
+        <b>To: </b>${email['recipients']}<br>
+        <b>Subject: </b>${email['subject']}<br>
+        <b>Timestamp: </b>${email['timestamp']}<br>
+      `
+      root_view.append(reply_button);
+
+      root_view.innerHTML += `
+        <hr>
+        ${email['body']}
+      `
+  });
 }
 
 function load_mailbox(mailbox) {
@@ -82,9 +116,7 @@ function load_mailbox(mailbox) {
         new_row.append(new_col);
 
         new_row.addEventListener('click', function() {
-          document.querySelector('#emails-view').style.display = 'none';
-          document.querySelector('#compose-view').style.display = 'none';
-          document.querySelector('#emails-detail').style.display = 'block';
+          load_email_detail(item['id']);
         })
 
         emails_view.append(new_row);
