@@ -20,10 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
       })
     })
     .then(response => response.json())
-    .then(result => {
-        console.log(result);
+    .then(_ => {
+        load_mailbox('sent');
     });
-    load_mailbox('sent');
+
     // to prevent page refresh
     return false;
   }
