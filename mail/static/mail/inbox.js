@@ -48,6 +48,7 @@ function load_email_detail(mail_id) {
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#emails-detail').style.display = 'block';
 
+  // GET email and render DOM
   fetch('/emails/' + mail_id)
   .then(response => response.json())
   .then(email => {
@@ -74,6 +75,14 @@ function load_email_detail(mail_id) {
         ${email['body']}
       `
   });
+
+  // mark as read
+  fetch('/emails/' + mail_id, {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  })
 }
 
 function load_mailbox(mailbox) {
@@ -96,6 +105,12 @@ function load_mailbox(mailbox) {
         new_row.classList.add('row');
         new_row.classList.add('border');
         new_row.classList.add('border-dark');
+        
+        if (item['read']) {
+          new_row.classList.add('bg-secondary');
+        } else {
+          new_row.classList.add('bg-white');
+        }
         
         let new_col;
 
