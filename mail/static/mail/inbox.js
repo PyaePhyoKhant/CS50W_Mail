@@ -52,28 +52,58 @@ function load_email_detail(mail_id) {
   fetch('/emails/' + mail_id)
   .then(response => response.json())
   .then(email => {
-      root_view = document.querySelector('#emails-detail');
+      const root_view = document.querySelector('#emails-detail');
+      root_view.innerHTML = ''
 
+      // reply button
       // TODO: add click EventListener
-      reply_button = document.createElement('button')
+      const reply_button = document.createElement('button')
       reply_button.classList.add('btn')
       reply_button.classList.add('btn-sm')
       reply_button.classList.add('btn-outline-primary')
       reply_button.setAttribute('id', 'reply')
       reply_button.innerHTML = 'Reply'
 
-      root_view.innerHTML= `
+      // archive/unarchive button
+      const archive_button = document.createElement('button')
+      archive_button.classList.add('btn')
+      archive_button.classList.add('btn-sm')
+      archive_button.classList.add('btn-outline-primary')
+      archive_button.setAttribute('id', 'archive')
+      let archive_flag;
+      if (email['archived']) {
+        archive_button.innerHTML = 'Unarchive';
+        archive_flag = false;
+      } else {
+        archive_button.innerHTML = 'Archive';
+        archive_flag = true;
+      }
+      archive_button.addEventListener('click', function() {
+        fetch('/emails/' + mail_id, {
+          method: 'PUT',
+          body: JSON.stringify({
+              archived: archive_flag
+          })
+        })
+        .then(_ => load_mailbox('inbox'))
+      })
+
+      root_view.insertAdjacentElement('beforeend', archive_button);
+
+      root_view.insertAdjacentHTML('beforeend', `
+        <br>
         <b>From: </b>${email['sender']}<br>
         <b>To: </b>${email['recipients']}<br>
         <b>Subject: </b>${email['subject']}<br>
         <b>Timestamp: </b>${email['timestamp']}<br>
-      `
-      root_view.append(reply_button);
+      `)
 
-      root_view.innerHTML += `
+      root_view.insertAdjacentElement('beforeend', reply_button);
+
+      root_view.insertAdjacentHTML('beforeend', `
         <hr>
         ${email['body']}
-      `
+      `)
   });
 
   // mark as read
