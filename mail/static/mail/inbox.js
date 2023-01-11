@@ -56,13 +56,17 @@ function load_email_detail(mail_id, allow_archive) {
       root_view.innerHTML = ''
 
       // reply button
-      // TODO: add click EventListener
       const reply_button = document.createElement('button')
       reply_button.classList.add('btn')
       reply_button.classList.add('btn-sm')
       reply_button.classList.add('btn-outline-primary')
       reply_button.setAttribute('id', 'reply')
       reply_button.innerHTML = 'Reply'
+      reply_button.addEventListener('click', function() {
+        compose_email();
+
+        document.querySelector('#compose-recipients').value = 'hello world';
+      })
 
       if (allow_archive) {
         // archive/unarchive button
