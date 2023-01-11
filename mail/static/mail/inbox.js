@@ -42,7 +42,7 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
-function load_email_detail(mail_id) {
+function load_email_detail(mail_id, allow_archive) {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
@@ -64,31 +64,33 @@ function load_email_detail(mail_id) {
       reply_button.setAttribute('id', 'reply')
       reply_button.innerHTML = 'Reply'
 
-      // archive/unarchive button
-      const archive_button = document.createElement('button')
-      archive_button.classList.add('btn')
-      archive_button.classList.add('btn-sm')
-      archive_button.classList.add('btn-outline-primary')
-      archive_button.setAttribute('id', 'archive')
-      let archive_flag;
-      if (email['archived']) {
-        archive_button.innerHTML = 'Unarchive';
-        archive_flag = false;
-      } else {
-        archive_button.innerHTML = 'Archive';
-        archive_flag = true;
-      }
-      archive_button.addEventListener('click', function() {
-        fetch('/emails/' + mail_id, {
-          method: 'PUT',
-          body: JSON.stringify({
-              archived: archive_flag
+      if (allow_archive) {
+        // archive/unarchive button
+        const archive_button = document.createElement('button')
+        archive_button.classList.add('btn')
+        archive_button.classList.add('btn-sm')
+        archive_button.classList.add('btn-outline-primary')
+        archive_button.setAttribute('id', 'archive')
+        let archive_flag;
+        if (email['archived']) {
+          archive_button.innerHTML = 'Unarchive';
+          archive_flag = false;
+        } else {
+          archive_button.innerHTML = 'Archive';
+          archive_flag = true;
+        }
+        archive_button.addEventListener('click', function() {
+          fetch('/emails/' + mail_id, {
+            method: 'PUT',
+            body: JSON.stringify({
+                archived: archive_flag
+            })
           })
+          .then(_ => load_mailbox('inbox'))
         })
-        .then(_ => load_mailbox('inbox'))
-      })
-
-      root_view.insertAdjacentElement('beforeend', archive_button);
+  
+        root_view.insertAdjacentElement('beforeend', archive_button);
+      }
 
       root_view.insertAdjacentHTML('beforeend', `
         <br>
@@ -160,8 +162,14 @@ function load_mailbox(mailbox) {
         new_col.innerHTML = `${item['timestamp']}`;
         new_row.append(new_col);
 
+        // archive feature is not available for sent mailbox
+        let allow_archive = true;
+        if (mailbox === 'sent') {
+          allow_archive = false
+        }
+
         new_row.addEventListener('click', function() {
-          load_email_detail(item['id']);
+          load_email_detail(item['id'], allow_archive);
         })
 
         emails_view.append(new_row);
