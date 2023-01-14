@@ -65,7 +65,16 @@ function load_email_detail(mail_id, allow_archive) {
       reply_button.addEventListener('click', function() {
         compose_email();
 
-        document.querySelector('#compose-recipients').value = 'hello world';
+        // pre-fill reply email
+        document.querySelector('#compose-recipients').value = email['sender'];
+
+        if (!email['subject'].startsWith('Re: ')) {
+          document.querySelector('#compose-subject').value = 'Re: ' + email['subject'];
+        } else {
+          document.querySelector('#compose-subject').value = email['subject'];
+        }
+
+        document.querySelector('#compose-body').value = `On ${email['timestamp']} ${email['sender']} wrote:\n${email['body']}`
       })
 
       if (allow_archive) {
